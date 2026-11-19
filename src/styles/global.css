@@ -189,7 +189,7 @@ a.chip:hover, button.chip:hover { color: var(--accent); border-color: var(--acce
 .prose h2 { margin-top: 2em; font-size: 1.55rem; }
 .prose a { color: var(--accent); }
 .prose code { font-family: var(--mono); font-size: 0.85em; background: var(--bg-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; }
-.prose pre { background: var(--bg-2) !important; border: 1px solid var(--line); border-radius: 14px; padding: 18px; overflow-x: auto; }
+.prose pre { background: #0d1117 !important; color: #e6edf3; border: 1px solid var(--line); border-radius: 14px; padding: 18px; overflow-x: auto; }
 .prose pre code { background: none; border: 0; padding: 0; }
 .prose blockquote { margin: 1.5em 0; padding: 14px 20px; border-left: 3px solid var(--accent); background: var(--bg-2); border-radius: 0 14px 14px 0; color: var(--muted); }
 .prose li { margin: 0.4em 0; }
@@ -249,7 +249,8 @@ a.chip:hover, button.chip:hover { color: var(--accent); border-color: var(--acce
   .article { padding-top: 0 !important; }
   .prose { max-width: none; }
   .prose table { display: table; font-size: 9pt; }
-  .prose tr, .prose blockquote, .prose pre { break-inside: avoid; }
+  .prose tr, .prose blockquote { break-inside: avoid; }
+  .prose pre { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 8.5pt; }
   .prose h2, .prose h3 { break-after: avoid; }
   .prose a { color: inherit; text-decoration: none; }
   .grad { -webkit-text-fill-color: currentColor; background: none; }

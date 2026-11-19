@@ -1,5 +1,17 @@
 [
   {
+    "id": "ci-cd-cheat-sheet",
+    "title": "CI/CD Cheat Sheet",
+    "description": "Delivery vs deployment, pipeline stages, deployment strategies, GitHub Actions vocabulary and an annotated Jenkinsfile.",
+    "file": "/pdfs/ci-cd-cheat-sheet.pdf",
+    "cover": "/pdfs/thumbs/ci-cd-cheat-sheet.jpg",
+    "post": "/blog/ci-cd-cheat-sheet",
+    "pages": 5,
+    "kind": "cheatsheet",
+    "date": "2026-11-19",
+    "tags": ["cicd", "github-actions", "jenkins", "devops", "cheatsheet"]
+  },
+  {
     "id": "linux-networking-cheat-sheet",
     "title": "Linux & Networking Cheat Sheet",
     "description": "Navigation, logs, permissions, systemd, networking, packages and Bash scripting: the commands I actually use, on 18 printable pages.",
