@@ -18,6 +18,7 @@ npm run dev        # http://localhost:4321
 | Write a blog post | Add a `.md` file to `src/content/blog/` |
 | Add a project | Add a `.md` file to `src/content/projects/` |
 | Share a PDF | Put the file in `public/pdfs/` and add an entry to `src/content/library.json` |
+| Add a certificate | Put the file in `public/certificates/`, a preview JPG in `public/certificates/thumbs/` (same name), and add an entry to `src/data/certificates.ts` |
 | Change colours / fonts | `src/styles/global.css` (the `:root` block at the top) |
 
 ### New blog post template

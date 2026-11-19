@@ -41,7 +41,9 @@ export const certifications = [
     url: 'https://www.credly.com/users/ammar-zeyad',
   },
   { name: 'Introduction to Linux (LFS101)', issuer: 'The Linux Foundation' },
-  { name: 'Introduction to Kubernetes', issuer: 'CNCF' },
+  { name: 'Introduction to Kubernetes (LFS158)', issuer: 'The Linux Foundation', date: 'May 2026', url: '/certificates' },
+  { name: 'Cloud-Native Tools & CNCF Ecosystem Mentorship', issuer: 'Qualify U', date: 'Jul 2026', url: '/certificates' },
+  { name: 'Jenkins Skill Tree', issuer: 'LabEx', date: 'Feb 2026', url: '/certificates' },
   { name: 'Intermediate Software Development (301, 302, 303)', issuer: 'Code Fellows', date: '2021' },
 ];
 

@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import { sortedCerts, certSrc, certThumb, certDate } from '../data/certificates';
+
+const certs = sortedCerts();
+const cats = [...new Set(certs.map((c) => c.category))];
+const issuers = new Set(certs.map((c) => c.issuer.split(' · ')[0])).size;
+---
+<Base title="Certificates" description="Certifications and courses I've completed in cloud, DevOps, Kubernetes and Git.">
+  <header class="page-head">
+    <p class="eyebrow">Certificates</p>
+    <h1>Proof of <span class="grad">learning.</span></h1>
+    <p>Every course and certification I've completed on the way from IT support to DevOps. Click any card to view the full certificate.</p>
+    <div class="stats">
+      <div><b data-count={certs.length}>0</b><span class="mono muted">certificates</span></div>
+      <div><b data-count={issuers}>0</b><span class="mono muted">issuers</span></div>
+      <div><b data-count={cats.length}>0</b><span class="mono muted">topics</span></div>
+    </div>
+  </header>
+
+  <div class="chips filters reveal" role="toolbar" aria-label="Filter by topic">
+    <button class="chip on" data-k="all">All · {certs.length}</button>
+    {cats.map((k) => <button class="chip" data-k={k}>{k} · {certs.filter((c) => c.category === k).length}</button>)}
+  </div>
+
+  <div class="cgrid">
+    {certs.map((c) => (
+      <button
+        class:list={['card', 'cert', 'reveal', { feat: c.featured }]}
+        data-cat={c.category}
+        data-title={c.title}
+        data-issuer={c.issuer}
+        data-date={certDate(c)}
+        data-note={c.note ?? ''}
+        data-img={certThumb(c)}
+        data-src={certSrc(c)}
+        data-verify={c.verify ?? ''}
+      >
+        <div class="thumb"><img src={certThumb(c)} alt={`${c.title} certificate`} loading="lazy" /><span class="shine"></span></div>
+        <div class="meta">
+          <span class="mono cat">{c.category}{c.featured && ' · ★ featured'}</span>
+          <h3>{c.title}</h3>
+          <span class="muted">{c.issuer} · {certDate(c)}</span>
+          {c.note && <span class="mono muted note">{c.note}</span>}
+        </div>
+      </button>
+    ))}
+  </div>
+
+  <p class="mono muted more">Also completed: Introduction to Linux (LFS101), The Linux Foundation · Intermediate Software Development 301–303, Code Fellows</p>
+
+  <dialog id="viewer" aria-label="Certificate viewer">
+    <button class="close" aria-label="Close">✕</button>
+    <img id="v-img" alt="" />
+    <div class="v-meta">
+      <div>
+        <h3 id="v-title"></h3>
+        <span class="muted" id="v-sub"></span>
+      </div>
+      <div class="v-actions">
+        <a class="btn" id="v-verify" target="_blank" rel="noopener">Verify ↗</a>
+        <a class="btn primary" id="v-open" target="_blank" rel="noopener">Open original <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </dialog>
+</Base>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cards = [...document.querySelectorAll<HTMLButtonElement>('.cert')];
+
+  // Filters
+  document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) =>
+    b.addEventListener('click', () => {
+      const run = () => {
+        document.querySelectorAll('.filters button').forEach((x) => x.classList.toggle('on', x === b));
+        cards.forEach((c) => (c.hidden = !(b.dataset.k === 'all' || c.dataset.cat === b.dataset.k)));
+      };
+      (document as any).startViewTransition && !reduce ? (document as any).startViewTransition(run) : run();
+    }),
+  );
+
+  // 3D tilt + shine
+  if (!reduce && matchMedia('(hover: hover)').matches) {
+    cards.forEach((card) => {
+      const t = card.querySelector<HTMLElement>('.thumb')!;
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        t.style.transform = `perspective(800px) rotateY(${x * 14}deg) rotateX(${-y * 14}deg) scale(1.03)`;
+        t.style.setProperty('--sx', `${(x + 0.5) * 100}%`);
+      });
+      card.addEventListener('pointerleave', () => (t.style.transform = ''));
+    });
+  }
+
+  // Viewer
+  const dlg = document.getElementById('viewer') as HTMLDialogElement;
+  const $ = (id: string) => document.getElementById(id)!;
+  cards.forEach((c, i) => {
+    c.style.viewTransitionName = `cert-${i}`;
+    c.addEventListener('click', () => {
+      const d = c.dataset;
+      ($('v-img') as HTMLImageElement).src = d.img!;
+      ($('v-img') as HTMLImageElement).alt = `${d.title} certificate`;
+      $('v-title').textContent = d.title!;
+      $('v-sub').textContent = [d.issuer, d.date, d.note].filter(Boolean).join(' · ');
+      ($('v-open') as HTMLAnchorElement).href = d.src!;
+      const v = $('v-verify') as HTMLAnchorElement;
+      v.hidden = !d.verify; if (d.verify) v.href = d.verify;
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.close')!.addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+</script>
+
+<style>
+  .stats { display: flex; gap: 40px; margin-top: 32px; flex-wrap: wrap; }
+  .stats div { display: flex; flex-direction: column; }
+  .stats b { font-size: 2.6rem; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+
+  .filters { margin-bottom: 28px; }
+  .filters button { cursor: pointer; font-family: var(--mono); }
+  .filters button.on { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+
+  .cgrid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .cert {
+    font: inherit; color: inherit; text-align: left; cursor: pointer;
+    display: flex; flex-direction: column; gap: 16px; padding: 14px 14px 20px;
+  }
+  .cert[hidden] { display: none; }
+  .cert:hover { transform: translateY(-4px); }
+  .cert.feat { border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .thumb {
+    position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 1.38; background: #fff;
+    border: 1px solid var(--line); transition: transform .35s var(--ease); transform-style: preserve-3d;
+    box-shadow: 0 18px 40px -22px rgba(0,0,0,.7);
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .shine {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,.45) var(--sx, 50%), transparent 80%);
+    mix-blend-mode: soft-light;
+  }
+  .cert:hover .shine { opacity: 1; }
+  .meta { display: flex; flex-direction: column; gap: 4px; padding: 0 6px; }
+  .meta h3 { font-size: 1.12rem; margin: 2px 0; line-height: 1.25; }
+  .cat { color: var(--accent); text-transform: uppercase; letter-spacing: .1em; font-size: .68rem; }
+  .note { font-size: .7rem; }
+  .more { margin-top: 32px; }
+
+  dialog {
+    width: min(960px, 100% - 32px); max-height: 92vh; padding: 0; border-radius: 22px;
+    border: 1px solid var(--line-strong); background: var(--card-solid); color: var(--text); overflow: auto;
+  }
+  dialog[open] { animation: pop .45s var(--ease); }
+  dialog::backdrop { background: rgba(3, 5, 10, .7); backdrop-filter: blur(8px); animation: fade .3s; }
+  @keyframes pop { from { opacity: 0; transform: translateY(24px) scale(.96); } }
+  @keyframes fade { from { opacity: 0; } }
+  #v-img { width: 100%; background: #fff; }
+  .v-meta { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; flex-wrap: wrap; }
+  .v-meta h3 { margin: 0 0 4px; font-size: 1.3rem; }
+  .v-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .v-actions [hidden] { display: none; }
+  .close {
+    position: sticky; top: 12px; float: right; margin: 12px 12px -50px 0; z-index: 2;
+    width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem;
+    border: 1px solid var(--line-strong); background: var(--card-solid); color: var(--text);
+  }
+</style>

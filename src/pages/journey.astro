@@ -11,7 +11,8 @@ const labels = { education: 'Education', work: 'Work', cert: 'Certification', pr
     <p>Every milestone, newest first. Some link through to the post or project behind them.</p>
   </header>
 
-  <ol class="timeline">
+  <ol class="timeline" id="tl">
+    <span class="fill" aria-hidden="true"></span>
     {journey.map((m, i) => (
       <li class:list={['reveal', i % 2 ? 'right' : 'left']}>
         <span class:list={['dot', m.kind]}></span>
@@ -29,12 +30,35 @@ const labels = { education: 'Education', work: 'Work', cert: 'Certification', pr
   </ol>
 </Base>
 
+<script>
+  // Timeline line "draws" itself as you scroll; dots light up when passed
+  const tl = document.getElementById('tl')!;
+  const items = [...tl.querySelectorAll('li')];
+  const update = () => {
+    const r = tl.getBoundingClientRect();
+    const mid = innerHeight * 0.6;
+    const p = Math.max(0, Math.min(1, (mid - r.top) / r.height));
+    tl.style.setProperty('--fill', String(p));
+    items.forEach((li) => li.classList.toggle('lit', li.getBoundingClientRect().top + 30 < mid));
+  };
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+</script>
+
 <style>
   .timeline { list-style: none; padding: 0; margin: 24px 0 0; position: relative; }
-  .timeline::before {
+  .timeline::before, .fill {
     content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-1px);
-    background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+    background: var(--line-strong);
   }
+  .fill {
+    background: linear-gradient(to bottom, var(--accent), var(--accent-2), var(--accent-3));
+    transform-origin: top; transform: translateX(-1px) scaleY(var(--fill, 0));
+    box-shadow: 0 0 14px var(--glow);
+  }
+  li .dot { transition: background .4s, box-shadow .4s, transform .4s var(--ease); }
+  li.lit .dot { background: var(--c); box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 18%, transparent); transform: scale(1.15); }
   .timeline li { position: relative; width: 50%; padding: 0 40px 32px; }
   .timeline li.left { margin-right: auto; }
   .timeline li.right { margin-left: auto; }
@@ -57,7 +81,7 @@ const labels = { education: 'Education', work: 'Work', cert: 'Certification', pr
   .more { display: inline-block; margin-top: 10px; color: var(--accent); text-decoration: none; }
 
   @media (max-width: 760px) {
-    .timeline::before { left: 8px; }
+    .timeline::before, .fill { left: 8px; }
     .timeline li, .timeline li.left, .timeline li.right { width: 100%; padding: 0 0 24px 36px; }
     li.left .dot, li.right .dot { left: 0; right: auto; }
   }

@@ -18,6 +18,13 @@ export const journey: Milestone[] = [
     link: '/projects/ticket-booking-platform',
   },
   {
+    date: 'Oct 2026',
+    title: 'Git Fundamentals, GitMastery',
+    detail: '18 hands-on levels completed by typing real Git commands in a simulated repository.',
+    kind: 'cert',
+    link: '/certificates',
+  },
+  {
     date: 'Sep 2026',
     title: 'Began MSc Computer Science',
     detail: 'Online at the University of East London.',
@@ -26,15 +33,37 @@ export const journey: Milestone[] = [
   {
     date: 'Feb – Jul 2026',
     title: 'Cloud & DevOps Mentorship, Qualify-You',
-    detail: 'Containerised an application with Docker, ran it on Kubernetes, and practised Linux administration.',
+    detail: 'Containerised an application with Docker, ran it on Kubernetes, and practised Linux administration. 27 guided 1-on-1 sessions covering CI/CD, observability and GitOps.',
     kind: 'training',
     link: '/projects/qualify-you-kubernetes',
   },
   {
+    date: 'May 2026',
+    title: 'Introduction to Kubernetes (LFS158)',
+    detail: 'Completed The Linux Foundation’s Kubernetes course.',
+    kind: 'cert',
+    link: '/certificates',
+  },
+  {
+    date: 'Feb 2026',
+    title: 'Jenkins Skill Tree, LabEx',
+    detail: 'Hands-on CI with Jenkins.',
+    kind: 'cert',
+    link: '/certificates',
+  },
+  {
     date: 'Dec 2025',
     title: 'AWS Certified Cloud Practitioner',
-    detail: 'Passed CLF-C02. Valid to December 2028.',
+    detail: 'Passed CLF-C02. Valid to December 2028. The same month: KodeKloud Git for Beginners and DolfinED IT, Cloud, TCP/IP & DevOps Fundamentals.',
     kind: 'cert',
+    link: '/certificates',
+  },
+  {
+    date: 'Aug 2025',
+    title: 'Foundations sprint on Coursera',
+    detail: 'AWS Cloud Technical Essentials, plus four IBM courses on hardware, operating systems, software and technical support.',
+    kind: 'cert',
+    link: '/certificates',
   },
   {
     date: '2025',

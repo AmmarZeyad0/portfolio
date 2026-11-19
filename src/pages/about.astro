@@ -64,11 +64,12 @@ import { profile, skills, certifications, experience, education } from '../data/
         {certifications.map((c) => (
           <div class="card reveal">
             {c.date && <span class="mono muted">{c.date}</span>}
-            <h3>{c.url ? <a href={c.url} target="_blank" rel="noopener">{c.name} ↗</a> : c.name}</h3>
+            <h3>{c.url ? <a href={c.url} target={c.url.startsWith('http') ? '_blank' : undefined} rel="noopener">{c.name} ↗</a> : c.name}</h3>
             <span class="muted">{c.issuer}</span>
           </div>
         ))}
       </div>
+      <a class="btn all-certs" href="/certificates">See all certificates <span class="arrow">→</span></a>
       <p class="muted langs">Languages: {profile.languages.join(' · ')}</p>
     </div>
   </section>
@@ -86,5 +87,6 @@ import { profile, skills, certifications, experience, education } from '../data/
   .xp li { margin: 4px 0; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   .langs { margin-top: 16px; }
+  .all-certs { margin-top: 16px; }
   @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
 </style>
