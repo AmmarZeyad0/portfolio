@@ -255,3 +255,6 @@ a.chip:hover, button.chip:hover { color: var(--accent); border-color: var(--acce
   .prose a { color: inherit; text-decoration: none; }
   .grad { -webkit-text-fill-color: currentColor; background: none; }
 }
+
+/* Show operators exactly as typed (no >= → ≥ ligatures) */
+code, pre, .mono, .term-body { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }

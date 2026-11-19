@@ -1,5 +1,17 @@
 [
   {
+    "id": "sql-cheat-sheet",
+    "title": "SQL Cheat Sheet",
+    "description": "Seven lessons from SELECT to JOINs and subqueries, an English-to-SQL translator, and the most-used commands with syntax.",
+    "file": "/pdfs/sql-cheat-sheet.pdf",
+    "cover": "/pdfs/thumbs/sql-cheat-sheet.jpg",
+    "post": "/blog/sql-cheat-sheet",
+    "pages": 8,
+    "kind": "cheatsheet",
+    "date": "2026-11-19",
+    "tags": ["sql", "databases", "cheatsheet"]
+  },
+  {
     "id": "ci-cd-cheat-sheet",
     "title": "CI/CD Cheat Sheet",
     "description": "Delivery vs deployment, pipeline stages, deployment strategies, GitHub Actions vocabulary and an annotated Jenkinsfile.",
