@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "linux-networking-cheat-sheet",
+    "title": "Linux & Networking Cheat Sheet",
+    "description": "Navigation, logs, permissions, systemd, networking, packages and Bash scripting: the commands I actually use, on 18 printable pages.",
+    "file": "/pdfs/linux-networking-cheat-sheet.pdf",
+    "cover": "/pdfs/thumbs/linux-networking-cheat-sheet.jpg",
+    "post": "/blog/linux-networking-cheat-sheet",
+    "pages": 18,
+    "kind": "cheatsheet",
+    "date": "2026-11-19",
+    "tags": ["linux", "networking", "devops", "cheatsheet"]
+  }
+]

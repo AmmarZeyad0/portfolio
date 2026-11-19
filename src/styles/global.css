@@ -211,3 +211,46 @@ a.chip:hover, button.chip:hover { color: var(--accent); border-color: var(--acce
   .words .w { opacity: 1; transform: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ───────────── Tables & Obsidian callouts (blog posts) ───────────── */
+.prose table { display: block; overflow-x: auto; border-collapse: collapse; width: 100%; margin: 1.2em 0; font-size: .92rem;
+  border: 1px solid var(--line); border-radius: 14px; }
+.prose th, .prose td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+.prose th { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); background: var(--bg-2); }
+.prose tr:last-child td { border-bottom: 0; }
+.prose tbody tr { transition: background .2s; }
+.prose tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.prose td code { white-space: nowrap; }
+.prose h3 { margin-top: 1.8em; font-size: 1.15rem; }
+.prose hr { border: 0; height: 1px; background: var(--line-strong); margin: 3em 0; }
+
+.prose blockquote.callout { --c: var(--accent-2); border-left-color: var(--c); color: var(--text);
+  background: color-mix(in srgb, var(--c) 8%, var(--bg-2)); }
+.prose blockquote.callout::before {
+  content: attr(data-label); display: block; margin-bottom: 4px;
+  font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .14em; color: var(--c);
+}
+.prose blockquote.callout > p.callout-title { font-weight: 600; margin: 0 0 6px; }
+.prose blockquote.callout > p:first-child { margin-top: 0; }
+.prose blockquote.callout > :last-child { margin-bottom: 0; }
+.callout-tip, .callout-summary { --c: var(--accent) !important; }
+.callout-warning { --c: #f5b97c !important; }
+.callout-danger { --c: #ff7a8a !important; }
+.callout-important { --c: var(--accent-3) !important; }
+
+/* ───────────── Print (used to export posts as PDFs) ───────────── */
+@media print {
+  :root { --bg: #fff; --bg-2: #f4f5f7; --card: #fff; --line: #dfe3ea; --line-strong: #c9ced8; --text: #111; --muted: #555;
+    --accent: #067a55; --accent-2: #2f6fe0; --accent-3: #7a43d0; color-scheme: light; }
+  @page { margin: 14mm 12mm; }
+  body { font-size: 10.5pt; background: #fff; }
+  .bg, .cursor-glow, .progress, .site-header, .footer, .back, .no-print { display: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .article { padding-top: 0 !important; }
+  .prose { max-width: none; }
+  .prose table { display: table; font-size: 9pt; }
+  .prose tr, .prose blockquote, .prose pre { break-inside: avoid; }
+  .prose h2, .prose h3 { break-after: avoid; }
+  .prose a { color: inherit; text-decoration: none; }
+  .grad { -webkit-text-fill-color: currentColor; background: none; }
+}

@@ -8,7 +8,7 @@ const icon: Record<string, string> = { notes: '📝', certificate: '🏅', paper
 ---
 <Base title="Library" description="My notes, certificates and papers as PDFs you can read or download.">
   <header class="page-head">
-    <p class="eyebrow">Library · {items.length} PDFs</p>
+    <p class="eyebrow">Library · {items.length} {items.length === 1 ? 'PDF' : 'PDFs'}</p>
     <h1>Notes &amp; documents.</h1>
     <p>Study notes, certificates, cheat sheets and papers. Read them in the browser or download them.</p>
   </header>
@@ -29,13 +29,16 @@ const icon: Record<string, string> = { notes: '📝', certificate: '🏅', paper
     <div class="grid grid-3">
       {items.map((i) => (
         <div class="card doc reveal" data-kind={i.data.kind}>
-          <div class="cover"><span>{icon[i.data.kind]}</span><span class="mono">PDF</span></div>
+          {i.data.cover
+            ? <div class="cover img"><img src={i.data.cover} alt="" loading="lazy" /><span class="badge mono">PDF{i.data.pages && ` · ${i.data.pages} pages`}</span></div>
+            : <div class="cover"><span>{icon[i.data.kind]}</span><span class="mono">PDF</span></div>}
           <span class="chip">{i.data.kind}</span>
           <h3>{i.data.title}</h3>
           <p class="muted">{i.data.description}</p>
           <div class="actions">
             <a class="btn primary" href={i.data.file} target="_blank" rel="noopener">View</a>
             <a class="btn" href={i.data.file} download>Download</a>
+            {i.data.post && <a class="btn" href={i.data.post}>Read online</a>}
           </div>
         </div>
       ))}
@@ -68,6 +71,11 @@ const icon: Record<string, string> = { notes: '📝', certificate: '🏅', paper
     background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, var(--bg-2)), color-mix(in srgb, var(--accent-2) 15%, var(--bg-2)));
   }
   .cover .mono { color: var(--muted); }
+  .cover.img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #fff; border: 1px solid var(--line); }
+  .cover.img img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .6s var(--ease); }
+  .doc:hover .cover.img img { transform: scale(1.04) translateY(-2%); }
+  .badge { position: absolute; right: 10px; bottom: 10px; padding: 3px 10px; border-radius: 999px; background: rgba(0,0,0,.7); color: #fff !important; }
+  .actions { flex-wrap: wrap; }
   .doc h3 { font-size: 1.15rem; margin: 0; }
   .doc p { margin: 0 0 auto; }
   .actions { display: flex; gap: 8px; margin-top: 8px; }

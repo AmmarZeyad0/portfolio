@@ -86,7 +86,7 @@ const headline = "Hi, I'm Ammar.".split(' ');
     <a class="card tile lib reveal" href="/library">
       <span class="mono muted">Library</span>
       {pdfs.length > 0
-        ? <span class="num"><span data-count={pdfs.length}>0</span><small>PDFs</small></span>
+        ? <span class="num"><span data-count={pdfs.length}>0</span><small>{pdfs.length === 1 ? 'PDF' : 'PDFs'}</small></span>
         : <span class="soon">Coming soon</span>}
       <span class="muted">Notes, cheat sheets &amp; papers</span>
     </a>

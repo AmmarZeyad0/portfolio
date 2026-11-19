@@ -38,6 +38,9 @@ const library = defineCollection({
     title: z.string(),
     description: z.string(),
     file: z.string(), // e.g. "/pdfs/my-notes.pdf" or a full URL (Cloudflare R2)
+    cover: z.string().optional(), // preview image, e.g. "/pdfs/thumbs/my-notes.jpg"
+    post: z.string().optional(), // link to the matching blog post, if any
+    pages: z.number().optional(),
     kind: z.enum(['notes', 'certificate', 'paper', 'cheatsheet', 'cv', 'other']),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
