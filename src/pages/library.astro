@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('library')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const kinds = [...new Set(items.map((i) => i.data.kind))];
+const icon: Record<string, string> = { notes: '📝', certificate: '🏅', paper: '📄', cheatsheet: '⚡', cv: '👤', other: '📁' };
+---
+<Base title="Library" description="My notes, certificates and papers as PDFs you can read or download.">
+  <header class="page-head">
+    <p class="eyebrow">Library · {items.length} PDFs</p>
+    <h1>Notes &amp; documents.</h1>
+    <p>Study notes, certificates, cheat sheets and papers. Read them in the browser or download them.</p>
+  </header>
+
+  {kinds.length > 1 && (
+    <div class="chips filters">
+      <button class="chip on" data-k="all">All</button>
+      {kinds.map((k) => <button class="chip" data-k={k}>{k}</button>)}
+    </div>
+  )}
+
+  {items.length === 0 ? (
+    <div class="card empty">
+      <p class="big">📚 The shelf is empty for now.</p>
+      <p class="muted">PDFs are on their way.</p>
+    </div>
+  ) : (
+    <div class="grid grid-3">
+      {items.map((i) => (
+        <div class="card doc reveal" data-kind={i.data.kind}>
+          <div class="cover"><span>{icon[i.data.kind]}</span><span class="mono">PDF</span></div>
+          <span class="chip">{i.data.kind}</span>
+          <h3>{i.data.title}</h3>
+          <p class="muted">{i.data.description}</p>
+          <div class="actions">
+            <a class="btn primary" href={i.data.file} target="_blank" rel="noopener">View</a>
+            <a class="btn" href={i.data.file} download>Download</a>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) =>
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.filters button').forEach((x) => x.classList.toggle('on', x === b));
+      document.querySelectorAll<HTMLElement>('[data-kind]').forEach((d) => {
+        d.style.display = b.dataset.k === 'all' || d.dataset.kind === b.dataset.k ? '' : 'none';
+      });
+    }),
+  );
+</script>
+
+<style>
+  .filters { margin-bottom: 20px; }
+  .filters button { background: none; cursor: pointer; text-transform: capitalize; }
+  .filters button.on { color: var(--accent); border-color: var(--accent); }
+  .empty { text-align: center; padding: 56px 24px; }
+  .empty .big { font-size: 1.3rem; margin: 0 0 6px; }
+  .doc { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .doc .chip { text-transform: capitalize; }
+  .cover {
+    width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px; font-size: 2.4rem;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, var(--bg-2)), color-mix(in srgb, var(--accent-2) 15%, var(--bg-2)));
+  }
+  .cover .mono { color: var(--muted); }
+  .doc h3 { font-size: 1.15rem; margin: 0; }
+  .doc p { margin: 0 0 auto; }
+  .actions { display: flex; gap: 8px; margin-top: 8px; }
+</style>

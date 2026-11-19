@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const minutes = (body = '') => Math.max(1, Math.round(body.split(/\s+/).length / 200));
+---
+<Base title="Blog" description="Notes on what I'm learning in DevOps and cloud.">
+  <header class="page-head">
+    <p class="eyebrow">Blog · {posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+    <h1>Things I learned.</h1>
+    <p>Write-ups, fixes and lessons from my projects and studies.</p>
+  </header>
+
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search posts…" aria-label="Search posts" />
+    <div class="chips">{tags.map((t) => <a class="chip" href={`/tags/${t}`}>#{t}</a>)}</div>
+  </div>
+
+  <div class="grid list">
+    {posts.map((p) => (
+      <a class="card row reveal" href={`/blog/${p.id}`} data-search={`${p.data.title} ${p.data.description} ${p.data.tags.join(' ')}`.toLowerCase()}>
+        <div class="when mono muted">{fmt(p.data.date)}<br />{minutes(p.body)} min read</div>
+        <div>
+          <h3>{p.data.title}</h3>
+          <p class="muted">{p.data.description}</p>
+          <div class="chips">{p.data.tags.map((t) => <span class="chip">#{t}</span>)}</div>
+        </div>
+      </a>
+    ))}
+  </div>
+  <p id="empty" class="muted" hidden>No posts match that search.</p>
+</Base>
+
+<script>
+  const q = document.getElementById('q') as HTMLInputElement;
+  const rows = document.querySelectorAll<HTMLElement>('[data-search]');
+  const empty = document.getElementById('empty')!;
+  q.addEventListener('input', () => {
+    const v = q.value.trim().toLowerCase();
+    let shown = 0;
+    rows.forEach((r) => { const ok = r.dataset.search!.includes(v); r.hidden = !ok; if (ok) shown++; });
+    empty.hidden = shown > 0;
+  });
+</script>
+
+<style>
+  .tools { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+  #q {
+    width: 100%; max-width: 420px; padding: 12px 18px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit;
+  }
+  #q:focus { outline: none; border-color: var(--accent); }
+  .row { display: grid; grid-template-columns: 140px 1fr; gap: 20px; }
+  .row h3 { font-size: 1.3rem; margin: 0 0 6px; }
+  .row p { margin: 0 0 12px; }
+  .row[hidden] { display: none; }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; gap: 8px; } }
+</style>

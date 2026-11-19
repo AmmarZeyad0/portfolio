@@ -1,0 +1,158 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { profile, skills, certifications } from '../data/profile';
+import { journey } from '../data/journey';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const featured = projects.find((p) => p.data.featured) ?? projects[0];
+const pdfs = await getCollection('library');
+const stack = ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'Jenkins', 'Prometheus', 'Grafana', 'Linux', 'Bash', 'Nginx', 'PostgreSQL', 'Redis', 'RabbitMQ'];
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+<Base>
+  <section class="hero">
+    <p class="eyebrow">{profile.location}</p>
+    <h1>Hi, I'm Ammar.<br /><span class="grad">I build, break &amp; ship infrastructure.</span></h1>
+    <p class="lead">{profile.tagline}</p>
+    <div class="cta">
+      <a class="btn primary" href="/journey">Follow the journey →</a>
+      <a class="btn" href="/projects">See projects</a>
+    </div>
+  </section>
+
+  <section class="bento">
+    <div class="card tile now reveal">
+      <span class="status">{profile.now.label}</span>
+      <p class="big">{profile.now.text}</p>
+    </div>
+
+    <a class="card tile cert reveal" href={certifications[0].url} target="_blank" rel="noopener">
+      <span class="mono muted">Certified</span>
+      <p class="cert-name">AWS Cloud<br />Practitioner</p>
+      <span class="mono muted">{certifications[0].date}</span>
+    </a>
+
+    <div class="card tile stat reveal">
+      <span class="num">3.5<small>yrs</small></span>
+      <span class="muted">in IT support before moving into DevOps</span>
+    </div>
+
+    {featured && (
+      <a class="card tile featured reveal" href={`/projects/${featured.id}`}>
+        <span class="mono muted">Featured project</span>
+        <h3>{featured.data.title}</h3>
+        <p class="muted">{featured.data.summary}</p>
+        <div class="chips">{featured.data.stack.map((s) => <span class="chip">{s}</span>)}</div>
+      </a>
+    )}
+
+    <div class="card tile study reveal">
+      <span class="mono muted">Studying</span>
+      <p>{profile.studying}</p>
+    </div>
+
+    <a class="card tile lib reveal" href="/library">
+      <span class="mono muted">Library</span>
+      {pdfs.length > 0
+        ? <span class="num">{pdfs.length}<small>PDFs</small></span>
+        : <span class="soon">Coming soon</span>}
+      <span class="muted">Notes, certificates &amp; papers</span>
+    </a>
+
+    <div class="card tile marquee reveal" aria-label="Tech stack">
+      <div class="track">
+        {[...stack, ...stack].map((s) => <span class="chip">{s}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="split">
+    <div>
+      <div class="sec-head"><h2>Latest notes</h2><a class="mono muted" href="/blog">All posts →</a></div>
+      <div class="grid">
+        {posts.map((p) => (
+          <a class="card post reveal" href={`/blog/${p.id}`}>
+            <span class="mono muted">{fmt(p.data.date)}</span>
+            <h3>{p.data.title}</h3>
+            <p class="muted">{p.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+    <div>
+      <div class="sec-head"><h2>Recent milestones</h2><a class="mono muted" href="/journey">Full timeline →</a></div>
+      <ol class="mini-tl">
+        {journey.slice(0, 4).map((m) => (
+          <li class="reveal">
+            <span class="mono muted">{m.date}</span>
+            <strong>{m.title}</strong>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding: 88px 0 48px; }
+  .grad {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lead { font-size: 1.15rem; color: var(--muted); max-width: 620px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+
+  .bento {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-areas:
+      'now now cert stat'
+      'feat feat study lib'
+      'feat feat marq marq';
+  }
+  .tile { display: flex; flex-direction: column; gap: 10px; }
+  .now { grid-area: now; background: linear-gradient(135deg, var(--card), color-mix(in srgb, var(--accent) 8%, var(--card))); }
+  .now .big { font-size: 1.2rem; margin: 0; }
+  .cert { grid-area: cert; justify-content: space-between; }
+  .cert-name { font-size: 1.35rem; font-weight: 600; margin: 0; line-height: 1.2; }
+  .stat { grid-area: stat; justify-content: flex-end; }
+  .num { font-size: 3rem; font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  .num small { font-size: 1rem; color: var(--muted); margin-left: 4px; font-weight: 500; }
+  .featured { grid-area: feat; justify-content: flex-end; min-height: 280px;
+    background: radial-gradient(400px 260px at 100% 0%, color-mix(in srgb, var(--accent-2) 18%, transparent), transparent 70%), var(--card); }
+  .featured h3 { font-size: 1.8rem; margin: 0; }
+  .featured p { margin: 0; }
+  .study { grid-area: study; }
+  .study p { margin: 0; font-weight: 500; }
+  .lib { grid-area: lib; }
+  .soon { font-size: 1.5rem; font-weight: 600; }
+  .marquee { grid-area: marq; overflow: hidden; justify-content: center; padding: 20px 0; }
+  .track { display: flex; gap: 8px; width: max-content; animation: scroll 30s linear infinite; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .track { animation: none; flex-wrap: wrap; width: auto; padding: 0 20px; } }
+
+  .split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; margin-top: 80px; }
+  .sec-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+  .sec-head h2 { margin: 0; }
+  .post h3 { font-size: 1.2rem; margin: 6px 0; }
+  .post p { margin: 0; }
+  .mini-tl { list-style: none; padding: 0; margin: 0; border-left: 2px solid var(--line); }
+  .mini-tl li { position: relative; padding: 0 0 22px 20px; display: flex; flex-direction: column; }
+  .mini-tl li::before {
+    content: ''; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--bg); border: 2px solid var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: 1fr 1fr; grid-template-areas: 'now now' 'cert stat' 'feat feat' 'study lib' 'marq marq'; }
+    .split { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    .bento { grid-template-columns: 1fr; grid-template-areas: 'now' 'cert' 'stat' 'feat' 'study' 'lib' 'marq'; }
+    .hero { padding-top: 56px; }
+  }
+</style>

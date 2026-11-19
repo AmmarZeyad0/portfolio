@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+const { project } = Astro.props;
+const { Content } = await render(project);
+const d = project.data;
+---
+<Base title={d.title} description={d.summary}>
+  <article class="article">
+    <a class="mono muted back" href="/projects">← All projects</a>
+    <header>
+      <span class:list={['status', { done: d.status === 'completed' }]}>
+        {d.status === 'in-progress' ? 'In progress' : 'Completed'} · {d.period}
+      </span>
+      <h1>{d.title}</h1>
+      <p class="muted lead">{d.summary}</p>
+      <div class="chips">{d.stack.map((s) => <span class="chip">{s}</span>)}</div>
+      {(d.repo || d.demo) && (
+        <div class="links">
+          {d.repo && <a class="btn" href={d.repo} target="_blank" rel="noopener">View code</a>}
+          {d.demo && <a class="btn primary" href={d.demo} target="_blank" rel="noopener">Live demo →</a>}
+        </div>
+      )}
+    </header>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>
+
+<style>
+  .article { padding-top: 48px; }
+  .back { text-decoration: none; }
+  header { margin: 24px 0 40px; max-width: 760px; display: flex; flex-direction: column; gap: 12px; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0; }
+  .lead { font-size: 1.15rem; margin: 0; }
+  .links { display: flex; gap: 10px; margin-top: 8px; }
+</style>

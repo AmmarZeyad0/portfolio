@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { profile } from '../../data/profile';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="Projects" description="Things I've built and the infrastructure behind them.">
+  <header class="page-head">
+    <p class="eyebrow">Projects · {projects.length}</p>
+    <h1>Things I've built.</h1>
+    <p>Hands-on DevOps work: containers, pipelines and the problems I hit along the way. Code is on <a href={profile.links.github} target="_blank" rel="noopener">GitHub</a>.</p>
+  </header>
+
+  <div class="grid grid-2">
+    {projects.map((p, i) => (
+      <a class:list={['card', 'proj', 'reveal', { wide: i === 0 }]} href={`/projects/${p.id}`}>
+        <div class="top">
+          <span class:list={['status', { done: p.data.status === 'completed' }]}>
+            {p.data.status === 'in-progress' ? 'In progress' : 'Completed'}
+          </span>
+          <span class="mono muted">{p.data.period}</span>
+        </div>
+        <h3>{p.data.title}</h3>
+        <p class="muted">{p.data.summary}</p>
+        <div class="chips">{p.data.stack.map((s) => <span class="chip">{s}</span>)}</div>
+      </a>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .page-head a { color: var(--accent); }
+  .proj { display: flex; flex-direction: column; gap: 10px; min-height: 240px; }
+  .proj h3 { font-size: 1.5rem; margin: 8px 0 0; }
+  .proj p { margin: 0 0 auto; }
+  .top { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .wide { grid-column: 1 / -1;
+    background: radial-gradient(500px 300px at 100% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%), var(--card); }
+  .wide h3 { font-size: 2rem; }
+</style>

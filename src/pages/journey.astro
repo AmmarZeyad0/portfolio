@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import { journey } from '../data/journey';
+
+const labels = { education: 'Education', work: 'Work', cert: 'Certification', project: 'Project', training: 'Training' } as const;
+---
+<Base title="Journey" description="The timeline of everything I've learned, built and achieved.">
+  <header class="page-head">
+    <p class="eyebrow">The journey</p>
+    <h1>From the help desk to the cloud.</h1>
+    <p>Every milestone, newest first. Some link through to the post or project behind them.</p>
+  </header>
+
+  <ol class="timeline">
+    {journey.map((m, i) => (
+      <li class:list={['reveal', i % 2 ? 'right' : 'left']}>
+        <span class:list={['dot', m.kind]}></span>
+        <div class="card item">
+          <div class="meta">
+            <span class="mono muted">{m.date}</span>
+            <span class:list={['chip', 'kind', m.kind]}>{labels[m.kind]}</span>
+          </div>
+          <h3>{m.title}</h3>
+          <p class="muted">{m.detail}</p>
+          {m.link && <a class="mono more" href={m.link}>Read more →</a>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</Base>
+
+<style>
+  .timeline { list-style: none; padding: 0; margin: 24px 0 0; position: relative; }
+  .timeline::before {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-1px);
+    background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+  }
+  .timeline li { position: relative; width: 50%; padding: 0 40px 32px; }
+  .timeline li.left { margin-right: auto; }
+  .timeline li.right { margin-left: auto; }
+  .dot {
+    position: absolute; top: 28px; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--bg); border: 3px solid var(--accent);
+  }
+  li.left .dot { right: -8px; }
+  li.right .dot { left: -8px; }
+  .dot.education, .chip.education { --c: #6aa8ff; }
+  .dot.work, .chip.work { --c: #f5b97c; }
+  .dot.cert, .chip.cert { --c: #7cf5c4; }
+  .dot.project, .chip.project { --c: #c79cff; }
+  .dot.training, .chip.training { --c: #ff8fb1; }
+  .dot { border-color: var(--c); }
+  .chip.kind { color: var(--c); border-color: color-mix(in srgb, var(--c) 40%, transparent); }
+  .item h3 { font-size: 1.2rem; margin: 8px 0 4px; }
+  .item p { margin: 0; }
+  .meta { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .more { display: inline-block; margin-top: 10px; color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 760px) {
+    .timeline::before { left: 8px; }
+    .timeline li, .timeline li.left, .timeline li.right { width: 100%; padding: 0 0 24px 36px; }
+    li.left .dot, li.right .dot { left: 0; right: auto; }
+  }
+</style>

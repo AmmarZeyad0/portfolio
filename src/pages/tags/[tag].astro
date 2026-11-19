@@ -1,0 +1,40 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const projects = await getCollection('projects');
+  const pdfs = await getCollection('library');
+  const tags = new Set([...posts, ...projects, ...pdfs].flatMap((e) => e.data.tags));
+  return [...tags].map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((p) => p.data.tags.includes(tag)),
+      projects: projects.filter((p) => p.data.tags.includes(tag)),
+      pdfs: pdfs.filter((p) => p.data.tags.includes(tag)),
+    },
+  }));
+}
+const { tag, posts, projects, pdfs } = Astro.props;
+---
+<Base title={`#${tag}`}>
+  <header class="page-head">
+    <p class="eyebrow">Tag</p>
+    <h1>#{tag}</h1>
+    <p>Everything on this site about {tag}: posts, projects and PDFs.</p>
+  </header>
+  {posts.length > 0 && <h2>Posts</h2>}
+  <div class="grid">{posts.map((p) => <a class="card" href={`/blog/${p.id}`}><h3>{p.data.title}</h3><p class="muted">{p.data.description}</p></a>)}</div>
+  {projects.length > 0 && <h2 class="sp">Projects</h2>}
+  <div class="grid">{projects.map((p) => <a class="card" href={`/projects/${p.id}`}><h3>{p.data.title}</h3><p class="muted">{p.data.summary}</p></a>)}</div>
+  {pdfs.length > 0 && <h2 class="sp">PDFs</h2>}
+  <div class="grid">{pdfs.map((p) => <a class="card" href={p.data.file} target="_blank" rel="noopener"><h3>{p.data.title}</h3><p class="muted">{p.data.description}</p></a>)}</div>
+</Base>
+
+<style>
+  h3 { font-size: 1.2rem; margin: 0 0 4px; }
+  .card p { margin: 0; }
+  .sp { margin-top: 40px; }
+</style>

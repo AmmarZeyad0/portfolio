@@ -1,0 +1,107 @@
+---
+import '../styles/global.css';
+import { profile } from '../data/profile';
+
+interface Props { title?: string; description?: string; }
+const { title, description = profile.tagline } = Astro.props;
+const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.role}`;
+const path = Astro.url.pathname;
+const nav = [
+  ['Journey', '/journey'],
+  ['Blog', '/blog'],
+  ['Projects', '/projects'],
+  ['Library', '/library'],
+  ['About', '/about'],
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script is:inline>
+      try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a href="/" class="logo"><span class="logo-mark">AZ</span><span class="logo-text">{profile.name}</span></a>
+        <nav>
+          {nav.map(([label, href]) => (
+            <a href={href} class:list={{ active: path.startsWith(href) }}>{label}</a>
+          ))}
+        </nav>
+        <button id="theme" class="theme-btn" aria-label="Toggle light/dark theme">◐</button>
+      </div>
+    </header>
+
+    <main class="wrap"><slot /></main>
+
+    <footer class="wrap footer">
+      <span class="mono muted">© {new Date().getFullYear()} {profile.name}</span>
+      <span class="chips">
+        <a class="chip" href={profile.links.github} target="_blank" rel="noopener">GitHub</a>
+        <a class="chip" href={profile.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        <a class="chip" href={`mailto:${profile.email}`}>Email</a>
+      </span>
+    </footer>
+
+    <script is:inline>
+      document.getElementById('theme').addEventListener('click', () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch {}
+      });
+      const io = new IntersectionObserver((es) => es.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      }), { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--bg) 75%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; gap: 16px; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; margin-right: auto; }
+  .logo-mark {
+    display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+    background: var(--accent); color: var(--accent-ink); font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+  }
+  nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  nav a {
+    text-decoration: none; color: var(--muted); font-size: 0.92rem;
+    padding: 6px 12px; border-radius: 999px; white-space: nowrap;
+  }
+  nav a:hover { color: var(--text); }
+  nav a.active { color: var(--text); background: var(--card); border: 1px solid var(--line); }
+  .theme-btn {
+    background: var(--card); color: var(--text); border: 1px solid var(--line);
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; flex: none;
+  }
+  .footer {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    margin-top: 96px; padding: 28px 0 40px; border-top: 1px solid var(--line);
+  }
+  @media (max-width: 760px) {
+    .logo-text { display: none; }
+    .bar { gap: 8px; }
+    nav a { padding: 6px 8px; font-size: 0.85rem; }
+  }
+</style>
